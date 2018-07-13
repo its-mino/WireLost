@@ -22,7 +22,8 @@ def findGreatestY(locs):
 			target = i
 	return target
 
-def mapLocs(locs):
+def mapLocs():
+	locs = getLocs()
 	greatest_x = findGreatestX(locs)
 	greatest_y = findGreatestY(locs)
 
@@ -31,19 +32,16 @@ def mapLocs(locs):
 
 	for i, tup in enumerate(locs):
 		x_ratio = locs[i][0]/x_max
-		print(i,x_ratio)
 		y_ratio = locs[i][1]/y_max
-		locs[i] = (i, (780*x_ratio, 630*y_ratio))
+		locs[i] = (i, (750*x_ratio, 600*y_ratio))
+
+		if locs[i][1] == (0,0):
+			locs[i] = (i, (10,10))
 	
 
 	return locs
 
 def index(request):
-	locs = getLocs()
-	locs = mapLocs(locs)
-
+	locs = mapLocs()
 	context = {'locs': locs}
 	return render(request, 'mapping/index.html', context)
-
-locs = getLocs()
-locs = mapLocs(locs)
