@@ -1,0 +1,6 @@
+<div style="font:80px Trebuchet MS;text-align:center;width:100%">WireLost</div>
+<div style="position:relative;margin:auto;width:800px;height:650px;border-radius:3px;border-style: solid;">
+	{% for node in locs %}
+	        <div style="text-align:center;position:absolute;width:20;height:20;background-color:black;color:white;left:{{node.1.0}}px;top:{{node.1.1}}px">{{node.0}}</div>
+	{% endfor %}
+</div>
