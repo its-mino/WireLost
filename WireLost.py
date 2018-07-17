@@ -68,7 +68,7 @@ def recieve_data(i, HOST, PORT):
 	s.close()
 
 def be_client(num):
-	HOSTS = ['','','','']
+	HOSTS = ['192.168.2.4','','','']
 	PORT = 50007
 	for i in range(num):
 		t = Thread(target=recieve_data, args=(i,HOSTS[i],PORT))
