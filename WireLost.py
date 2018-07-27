@@ -8,10 +8,8 @@ from threading import Thread
 
 parser = ArgumentParser()
 parser.add_argument("role", help="Choose whether to run as server or client")
+
 args = parser.parse_args()
-
-
-
 
 
 def combine(lov):
@@ -21,7 +19,7 @@ def combine(lov):
 	for i in range (0,(z)):
 	    del lov[i]
 	    del lov[(len(lov)-1)-i]
-
+		
 	average = float(sum(lov)/len(lov))
 	return average
 	#prints list, sum, length, and average
@@ -31,6 +29,12 @@ def combine(lov):
 	#print(average)
 
 def send_data(i, addr, conn):
+	#connect to master process
+	HOST = 'localhost'
+	PORT = 50008
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect((HOST, PORT))
+
 	with open('zero', 'rb') as file:
 		times = []
 		data = file.read()
@@ -39,13 +43,14 @@ def send_data(i, addr, conn):
 			conn.sendall(data)
 			conn.recv(1)
 			end_time = datetime.datetime.now()
-			times.append((end_time-start_time).total_seconds())
+			times.append(float((end_time-start_time).total_seconds()))
 	conn.close()
-	avg = combine(times)
+	avg = float(combine(times))
+	s.sendall((str(addr[0])+": "+str(avg)).encode())
 	print(str(addr)+": "+str(avg))
 
 def be_server():
-	HOST = ''   
+	HOST = 'localhost'
 	PORT = 50007
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.bind((HOST, PORT))
@@ -68,11 +73,10 @@ def recieve_data(i, HOST, PORT):
 	s.close()
 
 def be_client(num):
-	HOSTS = ['192.168.2.4','','','']
+	HOSTS = ['localhost']
 	PORT = 50007
-	for i in range(num):
-		t = Thread(target=recieve_data, args=(i,HOSTS[i],PORT))
-		t.start()
+	t = Thread(target=recieve_data, args=(0,HOSTS[0],PORT))
+	t.start()
 
 if args.role.lower() == 's':
 	be_server()

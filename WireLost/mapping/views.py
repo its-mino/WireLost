@@ -2,7 +2,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 def getLocs():
-	return [(0,0), (3,5), (2,2), (4,2)]
+	locs = []
+	with open('../data.txt', 'r') as file:
+		for line in file:
+			t = line.split(',')
+			locs.append((int(t[0]), int(t[1])))
+	return locs
 
 def findGreatestX(locs):
 	target = None
