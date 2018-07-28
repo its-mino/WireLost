@@ -78,7 +78,7 @@ def be_client(num):
 	t = Thread(target=recieve_data, args=(0,HOSTS[0],PORT))
 	t.start()
 
-if args.role.lower() == 's':
+if int(args.role) > 1:
 	be_server()
 else:
 	be_client(int(args.role))
