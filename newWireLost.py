@@ -22,12 +22,11 @@ def triangulate(AB, BC, AC):
 	ac_slope = 0
 	bc_slope = math.tan(C)
 	ab_slope = -1 * math.tan(A)
-	
+
 	x = sympy.Symbol('x')
 	Bx = sympy.solve(bc_slope*(x-AC) - ab_slope*(x))
 	Bx = Bx[0]
 	By = ab_slope * Bx
-
 	return (Bx, By)
 
 def combine(lov):
@@ -37,7 +36,7 @@ def combine(lov):
 	for i in range (0,(z)):
 	    del lov[i]
 	    del lov[(len(lov)-1)-i]
-		
+
 	average = float(sum(lov)/len(lov))
 	return average
 
@@ -52,9 +51,9 @@ def master_thread(avg, role, addr, conn):
 		else:
 			conn.sendall(str(avg).encode())
 	s.close()
-	
+
 def be_master(role):
-	MASTER_HOST = ''
+	MASTER_HOST = '192.168.2.3'
 	avg = None
 	if num is 0:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -74,7 +73,7 @@ def be_master(role):
 		avg = float(combine(times))
 	if num is 1:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((HOST, PORT))
+		s.connect((MASTER_HOST, 50009))
 		for i in range(50):
 			l = 0
 			while l < 25600:
@@ -82,7 +81,7 @@ def be_master(role):
 				l += sys.getsizeof(data)
 			s.sendall(b'a')
 		s.close()
-	
+
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect(('0.0.0.0', 50007))
 	while True:
@@ -92,12 +91,12 @@ def be_master(role):
 		t.start()
 
 def be_node():
-	HOSTS = [] #master hosts
+	HOSTS = ['192.168.2.3','192.168.2.4'] #master hosts
 	PORT = 50007
 	master_length = 0
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((HOSTS[0], PORT))
-	
+
 	with open('zero', 'rb') as file:
 			times = []
 			data = file.read()
@@ -110,10 +109,10 @@ def be_node():
 	conn.close()
 	avg_to_0 = float(combine(times))
 	s.close()
-	
+
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect((HOSTS[1], PORT))
-	
+
 	with open('zero', 'rb') as file:
 			times = []
 			data = file.read()
@@ -126,9 +125,10 @@ def be_node():
 	conn.close()
 	avg_to_1 = float(combine(times))
 	s.close()
-	
+
 	position = triangulate(avg_to_0, avg_to_1, master_length)
-	
+	print('position: ',position)
+
 if int(args.role) > 1:
 	be_node()
 else:
